@@ -80,9 +80,13 @@ async fn set_profile_color(
 }
 #[tauri::command]
 fn dismiss_switcher(app: tauri::AppHandle) {
+    hide_switcher(&app);
+}
+fn hide_switcher(app: &tauri::AppHandle) {
     if let Some(window) = app.get_webview_window("switcher") {
         let _ = window.hide();
     }
+    platform::after_switcher(app);
 }
 #[tauri::command]
 fn updater_ready(app: tauri::AppHandle) -> bool {
@@ -420,6 +424,7 @@ fn tray_image(color: &str) -> tauri::image::Image<'static> {
 }
 fn show_switcher(app: &tauri::AppHandle) {
     if let Some(window) = app.get_webview_window("switcher") {
+        platform::before_switcher(app);
         let _ = window.center();
         let _ = window.show();
         let _ = window.set_focus();
@@ -498,6 +503,7 @@ pub fn run() {
             let service = Service::new(root).map_err(std::io::Error::other)?;
             let data = service.data.clone();
             app.manage(Arc::new(Mutex::new(service)));
+            app.manage(platform::SwitcherFocus::default());
             tauri::WebviewWindowBuilder::new(
                 app,
                 "switcher",
@@ -560,7 +566,7 @@ pub fn run() {
         })
         .on_window_event(|window, event| {
             if window.label() == "switcher" && matches!(event, tauri::WindowEvent::Focused(false)) {
-                let _ = window.hide();
+                hide_switcher(window.app_handle());
             }
             if let tauri::WindowEvent::CloseRequested { api, .. } = event {
                 api.prevent_close();
