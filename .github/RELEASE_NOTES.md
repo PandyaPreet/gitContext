@@ -1,16 +1,23 @@
 ## Git Context v0.1.4
 
-Profile switching from the keyboard shortcut is now silent on macOS.
+Profile switching from the keyboard shortcut is now silent on macOS, and in-app updates are more reliable.
 
 ### What's fixed
 
 - Pressing **Command+Shift+G** from another app and choosing a profile no longer opens the main Git Context window. The picker closes, focus returns to the app you were using, and the menu bar shows the new profile.
 - If the main window was open in the background, it remains open and reappears when you return to Git Context.
-- Windows and Linux behaviour is unchanged.
+- Windows and Linux shortcut behaviour is unchanged.
+- **Check for updates** retries once and waits longer before reporting a failure. Background checks no longer show an error when you are offline.
+- Update errors explain what to do next, and **Download manually** opens the release page when a check or installation fails.
+- After installing an update, click **Restart now**. On macOS, Cmd+Q only hides the app, which previously left the old version running.
 
 ### Updating
 
 Use **Check for updates** in the app, or install the matching v0.1.4 installer from Assets. Unsigned builds require a manual installation.
+
+These updater fixes take effect once v0.1.4 is installed. If v0.1.2 or the first v0.1.3 build reports `plugin:resources|close not allowed by ACL`, the update has usually installed anyway: choose **Quit** from the tray/menu bar and reopen the app. If the version has not changed, install v0.1.4 from Assets.
+
+On macOS, keep Git Context in the Applications folder. It cannot update itself while running from the downloaded disk image.
 
 ### Downloads
 

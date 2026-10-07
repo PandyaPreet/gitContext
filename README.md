@@ -322,7 +322,7 @@ If Git Context saves you from one wrong-author commit, please ⭐ **star the rep
 
 ### Enable signed automatic updates before the next release
 
-The app checks for updates shortly after launch and daily, displays release notes, and installs only when the user clicks **Install update**. A local build without a signing public key clearly reports that updates are not configured.
+The app checks for updates shortly after launch and daily, displays release notes, and installs only when the user clicks **Install update**. After installation, **Restart now** relaunches the new version; if a check or installation fails, **Download manually** opens the latest release. A local build without a signing public key clearly reports that updates are not configured.
 
 1. Generate a dedicated updater signing key **outside this repository**, and keep a secure backup:
    ```bash

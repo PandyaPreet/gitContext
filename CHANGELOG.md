@@ -7,6 +7,14 @@ All notable changes to Git Context are documented here. The format follows [Keep
 ### Fixed
 
 - On macOS, switching profiles with the Command+Shift+G quick switcher no longer brings the main Git Context window to the front. When the shortcut is used from another app, the main window stays hidden while the picker is open, and focus returns to the previous app after a profile is selected or the picker is dismissed. The main window reappears unchanged when you return to Git Context.
+- **Check for updates** retries once and waits longer before reporting a failure, so a dropped connection or slow network no longer shows an error straight away. Background checks at launch and once a day no longer show an error when the computer is offline.
+- Update errors now explain what to do (no connection, the app running from a disk image or read-only location, a declined administrator prompt, a download that failed verification) and keep the original error text for bug reports.
+
+### Added
+
+- **Restart now** appears after an update is installed. On macOS, Cmd+Q and Dock Quit only hide the app, so the old version previously kept running until a full quit from the menu bar.
+- **Download manually** opens the latest release page whenever a check or installation fails.
+- Download progress is shown while an update downloads.
 
 ## [0.1.3] - 2026-10-02
 
