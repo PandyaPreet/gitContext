@@ -1,25 +1,16 @@
-## Git Context v0.1.3
+## Git Context v0.1.4
 
-Fixes updater permissions and misleading installation errors.
+Profile switching from the keyboard shortcut is now silent on macOS.
 
 ### What's fixed
 
-- The main window now has the resource-close permission needed to release updater resources.
-- A cleanup failure no longer turns a successful installation into an “Update failed” message.
-- Repeated checks and window teardown safely handle cleanup failures.
-- After installation, the restart message stays visible. Use **Quit Git Context Completely** (or **Quit** in older versions) from the tray/menu bar, then reopen the app.
-
-### macOS menu-bar behaviour
-
-Dock Quit, application-menu Quit, and Cmd+Q hide the windows while keeping the profile switcher running. Use **Quit Git Context Completely** from the menu bar to fully exit. Click the Dock icon or choose **Open Git Context** to reopen the window.
+- Pressing **Command+Shift+G** from another app and choosing a profile no longer opens the main Git Context window. The picker closes, focus returns to the app you were using, and the menu bar shows the new profile.
+- If the main window was open in the background, it remains open and reappears when you return to Git Context.
+- Windows and Linux behaviour is unchanged.
 
 ### Updating
 
-If you already installed the earlier v0.1.3 build, manually reinstall the corrected v0.1.3 installer. The updater does not offer a same-version replacement.
-
-If an older version reports `plugin:resources|close not allowed by ACL` after installing, fully quit from the tray/menu bar and reopen first: the installation may already have completed. If it has not, manually install v0.1.3 from Assets. Existing installations cannot receive permission changes until the new build is installed.
-
-Unsigned builds require a manual installation. Linux package users can update with the matching package; AppImage users can use the in-app updater. Updater signing does not add macOS notarization or Windows publisher certificates.
+Use **Check for updates** in the app, or install the matching v0.1.4 installer from Assets. Unsigned builds require a manual installation.
 
 ### Downloads
 
