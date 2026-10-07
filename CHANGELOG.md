@@ -2,6 +2,12 @@
 
 All notable changes to Git Context are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/).
 
+## [0.1.4] - 2026-10-07
+
+### Fixed
+
+- On macOS, switching profiles with the Command+Shift+G quick switcher no longer brings the main Git Context window to the front. When the shortcut is used from another app, the main window stays hidden while the picker is open, and focus returns to the previous app after a profile is selected or the picker is dismissed. The main window reappears unchanged when you return to Git Context.
+
 ## [0.1.3] - 2026-10-02
 
 ### Fixed
@@ -71,6 +77,7 @@ First public release.
 - Light and dark themes, launch at login, and a configurable startup view.
 - Installers for macOS (Apple Silicon and Intel), Windows (x64 and ARM64) and Linux (x64 and ARM64).
 
+[0.1.4]: https://github.com/PandyaPreet/GitContext/releases/tag/v0.1.4
 [0.1.3]: https://github.com/PandyaPreet/GitContext/releases/tag/v0.1.3
 [0.1.2]: https://github.com/PandyaPreet/GitContext/releases/tag/v0.1.2
 [0.1.1]: https://github.com/PandyaPreet/GitContext/releases/tag/v0.1.1

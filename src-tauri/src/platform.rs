@@ -139,3 +139,58 @@ pub fn handle_background_exit(app: &tauri::AppHandle, event: &tauri::RunEvent) {
     #[cfg(not(target_os = "macos"))]
     let _ = (app, event);
 }
+
+/// Focusing the quick switcher activates the whole app on macOS, which raises
+/// the main window and leaves it frontmost once the picker hides. Remember
+/// whether the shortcut was pressed from another app so dismissal can return
+/// focus there without revealing Git Context.
+#[derive(Default)]
+#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
+pub struct SwitcherFocus(std::sync::Mutex<Option<bool>>);
+
+pub fn before_switcher(app: &tauri::AppHandle) {
+    #[cfg(target_os = "macos")]
+    {
+        use tauri::Manager;
+        let Some(main) = app.get_webview_window("main") else {
+            return;
+        };
+        if main.is_focused().unwrap_or(false) {
+            return;
+        }
+        let visible = main.is_visible().unwrap_or(false);
+        if visible {
+            let _ = main.hide();
+        }
+        let state = app.state::<SwitcherFocus>();
+        let mut session = state.0.lock().unwrap_or_else(|e| e.into_inner());
+        // A repeated shortcut keeps the original window state.
+        if session.is_none() {
+            *session = Some(visible);
+        }
+    }
+    #[cfg(not(target_os = "macos"))]
+    let _ = app;
+}
+
+pub fn after_switcher(app: &tauri::AppHandle) {
+    #[cfg(target_os = "macos")]
+    {
+        use tauri::Manager;
+        let state = app.state::<SwitcherFocus>();
+        let Some(main_was_visible) = state.0.lock().unwrap_or_else(|e| e.into_inner()).take()
+        else {
+            return;
+        };
+        // Reorder the main window before hiding the app: it reappears only when
+        // the user returns to Git Context, and focus goes back to the prior app.
+        if main_was_visible {
+            if let Some(main) = app.get_webview_window("main") {
+                let _ = main.show();
+            }
+        }
+        let _ = app.hide();
+    }
+    #[cfg(not(target_os = "macos"))]
+    let _ = app;
+}
