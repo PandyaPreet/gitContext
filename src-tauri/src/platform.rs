@@ -145,6 +145,7 @@ pub fn handle_background_exit(app: &tauri::AppHandle, event: &tauri::RunEvent) {
 /// whether the shortcut was pressed from another app so dismissal can return
 /// focus there without revealing Git Context.
 #[derive(Default)]
+#[cfg_attr(not(target_os = "macos"), allow(dead_code))]
 pub struct SwitcherFocus(std::sync::Mutex<Option<bool>>);
 
 pub fn before_switcher(app: &tauri::AppHandle) {
