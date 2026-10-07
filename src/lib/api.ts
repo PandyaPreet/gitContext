@@ -30,6 +30,8 @@ export const api = {
   dismissSwitcher: () => call<void>("dismiss_switcher"),
   shortcutStatus: () => call<string | null>("shortcut_status"),
   updaterReady: () => call<boolean>("updater_ready"),
+  restartApp: () => call<void>("restart_app"),
+  openReleases: () => call<void>("open_releases"),
   renameProfile: (profileId: string, name: string) =>
     call<AppData>("rename_profile", { profileId, name }),
   removeProfile: (profileId: string) =>

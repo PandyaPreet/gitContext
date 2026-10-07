@@ -98,6 +98,20 @@ fn updater_ready(app: tauri::AppHandle) -> bool {
         .and_then(|v| v.as_str())
         .is_some_and(|s| !s.is_empty())
 }
+/// Cmd+Q and the Dock only hide the app on macOS, so an installed update needs
+/// an explicit restart to take effect.
+#[tauri::command]
+fn restart_app(app: tauri::AppHandle) {
+    app.restart();
+}
+#[tauri::command]
+async fn open_releases() -> Result<()> {
+    tauri::async_runtime::spawn_blocking(|| {
+        platform::open_url("https://github.com/PandyaPreet/GitContext/releases/latest")
+    })
+    .await
+    .map_err(|_| "Could not open the browser")?
+}
 #[tauri::command]
 async fn detect_environment() -> Result<Detection> {
     tauri::async_runtime::spawn_blocking(detection::detect)
@@ -580,6 +594,8 @@ pub fn run() {
             set_profile_color,
             dismiss_switcher,
             updater_ready,
+            restart_app,
+            open_releases,
             shortcut_status,
             detect_environment,
             import_key,

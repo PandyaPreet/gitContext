@@ -7,13 +7,20 @@ const mocks = vi.hoisted(() => ({
   ready: vi.fn(),
   check: vi.fn(),
   install: vi.fn(async () => {}),
+  restart: vi.fn(async () => {}),
+  releases: vi.fn(async () => {}),
 }));
 vi.mock("../lib/api", () => ({
   native: true,
-  api: { updaterReady: mocks.ready, shortcutStatus: async () => null },
+  api: {
+    updaterReady: mocks.ready,
+    shortcutStatus: async () => null,
+    restartApp: mocks.restart,
+    openReleases: mocks.releases,
+  },
 }));
 vi.mock("@tauri-apps/plugin-updater", () => ({ check: mocks.check }));
-import { Updates } from "./updates";
+import { explainUpdateError, Updates } from "./updates";
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
@@ -44,6 +51,52 @@ it("shows release notes and installs only after the user clicks Install", async 
   await user.click(screen.getByRole("button", { name: "Install update" }));
   await waitFor(() => expect(mocks.install).toHaveBeenCalledTimes(1));
   await screen.findByText(/Update installed/);
+  await user.click(screen.getByRole("button", { name: "Restart now" }));
+  expect(mocks.restart).toHaveBeenCalledTimes(1);
+});
+
+it("retries a failed check once before reporting it", async () => {
+  mocks.ready.mockResolvedValue(true);
+  mocks.check
+    .mockRejectedValueOnce(new Error("error sending request"))
+    .mockResolvedValueOnce(null);
+  const user = userEvent.setup();
+  render(<Updates />);
+  await user.click(screen.getByText("Quick switch & app updates"));
+  await user.click(screen.getByRole("button", { name: "Check for updates" }));
+  await screen.findByText("You’re up to date.", {}, { timeout: 4000 });
+  expect(mocks.check).toHaveBeenCalledTimes(2);
+  expect(
+    screen.queryByRole("button", { name: "Download manually" }),
+  ).not.toBeInTheDocument();
+});
+
+it("explains an unreachable update server and offers the manual download", async () => {
+  mocks.ready.mockResolvedValue(true);
+  mocks.check.mockRejectedValue(new Error("error sending request for url"));
+  const user = userEvent.setup();
+  render(<Updates />);
+  await user.click(screen.getByText("Quick switch & app updates"));
+  await user.click(screen.getByRole("button", { name: "Check for updates" }));
+  await screen.findByText(
+    /Could not check for updates.*internet connection.*error sending request/,
+    {},
+    { timeout: 4000 },
+  );
+  await user.click(screen.getByRole("button", { name: "Download manually" }));
+  expect(mocks.releases).toHaveBeenCalledTimes(1);
+});
+
+it("turns install-location and permission errors into next steps", () => {
+  expect(
+    explainUpdateError(new Error("Read-only file system (os error 30)")),
+  ).toMatch(/Applications folder/);
+  expect(explainUpdateError("Failed to move the new app into place")).toMatch(
+    /administrator prompt/,
+  );
+  expect(explainUpdateError("something unexpected")).toBe(
+    "something unexpected",
+  );
 });
 
 it("keeps installation successful when resource cleanup fails", async () => {
